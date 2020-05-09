@@ -17,12 +17,13 @@ import java.util.Map;
 @org.springframework.stereotype.Controller
 public class Get_Time_Controller {
 
-    @RequestMapping("api/getTime")
+    //获得时间
+    //url : http://localhost:8080/api/GetTime
+    @RequestMapping("api/GetTime")
     @ResponseBody
     public Map<String,Object> getTime(){
 
         //获得日期和具体时间，分别转换成字符串，分别发送
-        //url : http://localhost:8080/api/getTime
 
         System.out.println("微信小程序正在调用...");
 
@@ -49,7 +50,6 @@ public class Get_Time_Controller {
         return map;
 
     }
-
 
     @RequestMapping("")
     public String Test(){

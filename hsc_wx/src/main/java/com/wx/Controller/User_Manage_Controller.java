@@ -28,7 +28,7 @@ public class User_Manage_Controller {
         final String DB_URL = "jdbc:mysql://localhost:3306/test_db";
         // 数据库的用户名与密码，需要根据自己的设置
         final String USER = "root";
-        final String PASS = "222777hhh";
+        final String PASS = "123";
 
         Connection conn = null;
         Statement stmt = null;

@@ -36,11 +36,11 @@ public class Get_Time_Controller {
         String string_date = date.format(current_time);//日期转成字符串
         String string_time = time.format(current_time);//具体时间转成字符串
 
-        List<String> list1 = new ArrayList<String>();//发送日期，格式:20200507
+        List<String> list1 = new ArrayList<>();//发送日期，格式:20200507
         list1.add(string_date);
         map.put("list1",list1);
 
-        List<String> list2 = new ArrayList<String>();//发送具体时间，格式220159
+        List<String> list2 = new ArrayList<>();//发送具体时间，格式220159
         list2.add(string_time);
         map.put("list2",list2);
 
@@ -49,11 +49,6 @@ public class Get_Time_Controller {
         System.out.println("微信小程序调用完成...");
         return map;
 
-    }
-
-    @RequestMapping("")
-    public String Test(){
-        return "Hello world";
     }
 
 }

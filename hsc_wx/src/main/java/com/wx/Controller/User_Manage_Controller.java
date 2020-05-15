@@ -20,8 +20,8 @@ import java.util.*;
 public class User_Manage_Controller {
 
     //接受从前端传来的code（code）、性别（gender）、用户昵称（nickname）、头像url（avaUrl）
-    //根据uid查询数据库判断是否注册，已注册flag返回1，未注册flag返回0,并返回用户uid
-    //若未注册，则将用户信息写入数据库
+    //根据uid查询数据库判断是否注册，若未注册，则将用户信息写入数据库
+    //已注册flag返回1，未注册flag返回0,并返回用户uid
     //url : http://localhost:8080/api/UserManage
     @RequestMapping("api/UserManage")
     @ResponseBody

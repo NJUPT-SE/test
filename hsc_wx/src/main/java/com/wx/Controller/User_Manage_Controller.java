@@ -19,8 +19,8 @@ import java.util.*;
 @org.springframework.stereotype.Controller
 public class User_Manage_Controller {
 
-    //接受从前端传来的唯一微信用户识别码（openid）、性别（gender）、用户昵称（nickname）、头像url（avaUrl）
-    //根据uid查询数据库判断是否注册，已注册返回1，未注册返回0
+    //接受从前端传来的code（code）、性别（gender）、用户昵称（nickname）、头像url（avaUrl）
+    //根据uid查询数据库判断是否注册，已注册flag返回1，未注册flag返回0,并返回用户uid
     //若未注册，则将用户信息写入数据库
     //url : http://localhost:8080/api/UserManage
     @RequestMapping("api/UserManage")
@@ -30,6 +30,7 @@ public class User_Manage_Controller {
         System.out.println("微信小程序正在调用...");
 
         String flag = "0";  //判断用户注册or登录，0代表注册，1代表登录
+        int uid=0;  //用户uid，为自增长的主键
 
         //POST获取用户openid
         String url="https://api.weixin.qq.com/sns/jscode2session";
@@ -40,7 +41,7 @@ public class User_Manage_Controller {
         //提取openid
         JSONObject object=JSONObject.fromObject(R);
         String openid= (String) object.get("openid");
-         System.out.println("openid:"+openid);
+        System.out.println("openid:"+openid);
 
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -59,21 +60,21 @@ public class User_Manage_Controller {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
             stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT openid FROM tb1";
-            ResultSet rs = stmt.executeQuery(sql);
+            String sql1,sql2;
 
-            //检索数据库中是否有该uid
-            while (rs.next()) {
-                String id = rs.getString("openid");
-                if (openid.equals(id)) {
+            //检索数据库中是否有该openid
+            sql1 = "SELECT openid FROM tb1";
+            ResultSet rs1 = stmt.executeQuery(sql1);
+            while (rs1.next()) {
+                String exist_openid_1 = rs1.getString("openid");
+                if (openid.equals(exist_openid_1)) {
                     flag = "1";
                     System.out.println("登录成功");
                     break;
                 }
             }
 
-            //数据库中没有该uid，则写入数据库完成注册
+            //数据库中没有该openid，则写入数据库完成注册
             if (flag.equals("0")) {
                 try {
                     stmt = conn.prepareStatement("insert into tb1 (openid,gender,nickname,avaUrl) values(?,?,?,?)");
@@ -82,14 +83,26 @@ public class User_Manage_Controller {
                     ((PreparedStatement) stmt).setString(3, nickname);
                     ((PreparedStatement) stmt).setString(4, avaUrl);
                     ((PreparedStatement) stmt).executeUpdate();
-                    System.out.println("登录成功");
+                    System.out.println("注册成功");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
+            //根据openid获取uid
+            sql2="SELECT * FROM tb1";
+            ResultSet rs2 = stmt.executeQuery(sql2);
+            while (rs2.next()) {
+                String exist_openid_2 = rs2.getString("openid");
+                if (openid.equals(exist_openid_2)) {
+                    uid=rs2.getInt("uid");
+                    break;
+                }
+            }
+
             // 完成后关闭
-            rs.close();
+            rs1.close();
+            rs2.close();
             stmt.close();
             conn.close();
         } catch (SQLException se) {
@@ -114,6 +127,7 @@ public class User_Manage_Controller {
         Map<String, Object> map = new HashMap<String, Object>();
 
         System.out.println("微信小程序调用完成...");
+        map.put("uid",uid);
         map.put("flag", flag);
         return map;
     }
@@ -163,4 +177,3 @@ public class User_Manage_Controller {
         return result;
     }
 }
-

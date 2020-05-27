@@ -17,7 +17,8 @@ import java.util.*;
 public class Big_Day_Controller {
 
     //新增一条纪念日记录
-    //接受从前端传来的uid,title,date,notes,img存入数据库
+    //接受从前端传来的uid,title,date,notes,img，为新纪念日分配id
+    //再将这6项数据存入数据库
     //新建成功返回err=1，失败err=0
     //url:http://localhost:8080/api/bigDay/build
     @RequestMapping("api/bigDay/build")
@@ -212,8 +213,6 @@ public class Big_Day_Controller {
             String sql;
             sql = "SELECT * FROM bigday ORDER BY date ASC";
             ResultSet rs = stmt.executeQuery(sql);
-
-            //根据date
 
             //根据uid找到所有纪念日记录并储存在ArrayList中
             while (rs.next()) {

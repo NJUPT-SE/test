@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +18,7 @@ import java.util.Map;
 public class Habit_Clockin_Controller {
     //打卡
     //接受从前端传来的uid、id，根据uid、id定位记录并进行打卡
-    //打卡成功返回err=1,今日已打卡即打卡失败err=0
+    //打卡成功返回err=0,今日已打卡即打卡失败err=1
     //url:http://localhost:8080/api/habit/clockin
     @RequestMapping("api/habit/clockin")
     @ResponseBody
@@ -32,7 +30,7 @@ public class Habit_Clockin_Controller {
         String string_date = date.format(time1);//日期转成字符串
         int current_date = Integer.parseInt(string_date);
 
-        int err=0; //打卡成功，err=1，打卡失败，err=0
+        int err=1; //打卡成功，err=0，打卡失败，err=1
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
         final String DB_URL = "jdbc:mysql://localhost:3306/user";
@@ -65,21 +63,21 @@ public class Habit_Clockin_Controller {
             if(current_date-lasted_clockin==1)  {          //昨天打了卡，continue_clockin加一
                 ((PreparedStatement) stmt).setInt(1, continue_clockin+1);
                 ((PreparedStatement) stmt).executeUpdate();
-                err=1;
+                err=0;
                 System.out.println("case1");
             }
             else if(current_date-lasted_clockin>1) {      //昨天未打卡，continue_clockin置一
                 ((PreparedStatement) stmt).setInt(1, 1);
                 ((PreparedStatement) stmt).executeUpdate();
-                err = 1;
+                err = 0;
                 System.out.println("case2");
             }
             else if(current_date-lasted_clockin==0) {   //今天打过卡了，continue_clockin不变
-                err = 0;
+                err = 1;
                 System.out.println("case3");
             }
 
-            if(err==1) { //今天未打卡
+            if(err==0) { //今天未打卡
                 //更新lasted_clockin
                 stmt = conn.prepareStatement("UPDATE habit set lasted_clockin=? WHERE uid=" + uid + " AND id=" + id);
                 ((PreparedStatement) stmt).setInt(1, current_date);

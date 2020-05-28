@@ -19,14 +19,14 @@ public class Big_Day_Controller {
     //新增一条纪念日记录
     //接受从前端传来的uid,title,date,notes,img，为新纪念日分配id
     //再将这6项数据存入数据库
-    //新建成功返回err=1，失败err=0
+    //新建成功返回err=0，失败err=1
     //url:http://localhost:8080/api/bigDay/build
     @RequestMapping("api/bigDay/build")
     @ResponseBody
     public Map<String, Object> bigday_build(int uid, String title,String date, String notes,int img)
             throws  ParseException {
 
-        int err=0; //新建成功，err=1，新建失败，err=0
+        int err=1; //新建成功，err=0，新建失败，err=1
 
         //获取的String类型date转化为java.sql.Date类型
         DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -69,7 +69,7 @@ public class Big_Day_Controller {
             int id=max_id+1;
 
             //写入数据库完成新建
-            if (err==0) {
+            if (err==1) {
                 try {
                     stmt = conn.prepareStatement("insert into bigday (uid,id,title,date,notes,img) values(?,?,?,?,?,?)");
                     ((PreparedStatement) stmt).setInt(1, uid);
@@ -79,7 +79,7 @@ public class Big_Day_Controller {
                     ((PreparedStatement) stmt).setString(5, notes);
                     ((PreparedStatement) stmt).setInt(6, img);
                     ((PreparedStatement) stmt).executeUpdate();
-                    err=1;
+                    err=0;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -117,13 +117,13 @@ public class Big_Day_Controller {
 
     //删除一条纪念日记录
     //接受从前端传来的uid,id在数据库中查找相应纪念日记录并删除
-    //删除成功返回err=1，失败err=0
+    //删除成功返回err=0，失败err=1
     //url:http://localhost:8080/api/bigDay/delete
     @RequestMapping("api/bigDay/delete")
     @ResponseBody
     public Map<String, Object> bigday_delete(int uid, int id) {
 
-        int err=0; //删除成功，err=1，删除失败，err=0
+        int err=1; //删除成功，err=0，删除失败，err=1
 
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -148,7 +148,7 @@ public class Big_Day_Controller {
             sql = "DELETE FROM bigday WHERE id="+id+" AND uid="+uid;
             //System.out.println(sql);
             stmt.executeUpdate(sql);
-            err=1;
+            err=0;
 
             // 完成后关闭
             stmt.close();
@@ -181,13 +181,13 @@ public class Big_Day_Controller {
     //查看用户的全部纪念日记录
     //接受从前端传来的uid在数据库中查找所有纪念日记录
     //按照date升序(2020-05-11,2020-05-12,2020-05-13)返回所有纪念日记录的id、title、date、notes、img
-    //查看成功返回err=1，失败err=0
+    //查看成功返回err=0，失败err=1
     //url:http://localhost:8080/api/bigDay/view
     @RequestMapping("api/bigDay/view")
     @ResponseBody
     public Map<String, Object> bigday_view(int uid) {
 
-        int err=0; //删除成功，err=1，删除失败，err=0
+        int err=1; //删除成功，err=0，删除失败，err=1
         SimpleDateFormat f= new SimpleDateFormat("yyyy-MM-dd");
 
         //ArrayList，以Record类型来临时存储用户所有记录
@@ -231,7 +231,7 @@ public class Big_Day_Controller {
                     all_record.add(map1);
                 }
             }
-            err=1;
+            err=0;
 
             // 完成后关闭
             stmt.close();
@@ -266,14 +266,14 @@ public class Big_Day_Controller {
 
     //修改用户的一条纪念日记录
     //接受从前端传来的uid、id、title、date、notes、img，根据uid、id定位记录并更新
-    //修改成功返回err=1,失败err=0
+    //修改成功返回err=0,失败err=1
     //url:http://localhost:8080/api/bigDay/revise
     @RequestMapping("api/bigDay/revise")
     @ResponseBody
     public Map<String, Object> bigday_revise(int uid,int id, String title,String date, String notes,int img)
             throws  ParseException {
 
-        int err=0; //修改成功，err=1，修改失败，err=0
+        int err=1; //修改成功，err=0，修改失败，err=1
 
         //获取的String类型date转化为java.sql.Date类型
         DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -307,7 +307,7 @@ public class Big_Day_Controller {
             ((PreparedStatement) stmt).setInt(5,uid);
             ((PreparedStatement) stmt).setInt(6,id);
             ((PreparedStatement) stmt).executeUpdate();
-            err=1;
+            err=0;
 
             // 完成后关闭
             stmt.close();

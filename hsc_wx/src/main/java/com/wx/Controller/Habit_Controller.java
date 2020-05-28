@@ -23,13 +23,13 @@ public class Habit_Controller {
     //新增一条习惯打卡记录
     //接受从前端传来的uid,title,remind,time,img
     //为用户的新习惯分配id,再将这6项内容写入数据库
-    //新建成功返回err=1，失败err=0
+    //新建成功返回err=0，失败err=1
     //url:http://localhost:8080/api/habit/build
     @RequestMapping("api/habit/build")
     @ResponseBody
-    public Map<String, Object> habit_build(int uid, String title, String time, int remind, int img) {
+    public Map<String, Object> habit_build(int uid, String title, int time, int remind, int img) {
 
-        int err = 0; //新建成功，err=1，新建失败，err=0
+        int err = 0; //新建成功，err=0，新建失败，err=1
 
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -72,14 +72,14 @@ public class Habit_Controller {
                 ((PreparedStatement) stmt).setInt(1, uid);
                 ((PreparedStatement) stmt).setInt(2, id);
                 ((PreparedStatement) stmt).setString(3, title);
-                ((PreparedStatement) stmt).setString(4, time);
+                ((PreparedStatement) stmt).setInt(4, time);
                 ((PreparedStatement) stmt).setInt(5, remind);
                 ((PreparedStatement) stmt).setInt(6, img);
                 ((PreparedStatement) stmt).setInt(7, 0); //lasted_clockin初始值为0
                 ((PreparedStatement) stmt).setInt(8, 0); //continue_clockin初始值为0
                 ((PreparedStatement) stmt).setInt(9, 0); //total_clockin初始值为0
                 ((PreparedStatement) stmt).executeUpdate();
-                err = 1;
+                err = 0;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -116,12 +116,12 @@ public class Habit_Controller {
 
     //删除一条习惯打卡记录
     //接受从前端传来的uid和id,在数据库中查找相应习惯记录并删除
-    //删除成功返回err=1，失败err=0
+    //删除成功返回err=0，失败err=1
     //url:http://localhost:8080/api/habit/delete
     @RequestMapping("api/habit/delete")
     @ResponseBody
     public Map<String, Object> memo_delete(int uid, int id) {
-        int err = 0;  //删除成功，err=1，删除失败，err=0
+        int err = 1;  //删除成功，err=0，删除失败，err=1
 
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -145,7 +145,7 @@ public class Habit_Controller {
             sql = "DELETE FROM habit WHERE id=" + id + " AND uid=" + uid;
             //System.out.println(sql);
             stmt.executeUpdate(sql);
-            err = 1;
+            err = 0;
 
             // 完成后关闭
             stmt.close();
@@ -178,12 +178,12 @@ public class Habit_Controller {
     //接受从前端传来的uid在数据库中查找所有习惯
     //today_clockin:今日是否打卡，0表示今日未打卡，1表示今日已打卡
     //按id升序返回所有记录的id,title,remind,time,img,lasted_clockin,continue_clockin,total_clockin,is_clockin
-    //查看成功返回err=1，失败err=0
+    //查看成功返回err=0，失败err=1
     //url:http://localhost:8080/api/habit/view
     @RequestMapping("api/habit/view")
     @ResponseBody
     public Map<String, Object> habit_view(int uid) {
-        int err = 0; //查看成功，err=1，查看失败，err=0
+        int err = 1; //查看成功，err=0，查看失败，err=1
 
         //ArrayList，以Record类型来临时存储用户所有记录
         ArrayList<HashMap> all_record = new ArrayList<>();
@@ -244,7 +244,7 @@ public class Habit_Controller {
                 map1.put("id", rs.getInt("id"));
                 map1.put("title", rs.getString("title"));
                 map1.put("remind", rs.getInt("remind"));
-                map1.put("time", rs.getString("time"));
+                map1.put("time", rs.getInt("time"));
                 map1.put("img", rs.getInt("img"));
                 map1.put("lasted_clockin", rs.getInt("lasted_clockin"));
                 map1.put("continue_clockin", rs.getInt("continue_clockin"));
@@ -254,7 +254,7 @@ public class Habit_Controller {
                 all_record.add(map1);
             }
 
-            err = 1;
+            err = 0;
             // 完成后关闭
             stmt.close();
             //stmt.close();
@@ -289,14 +289,14 @@ public class Habit_Controller {
 
     //修改用户的一条habit记录
     //接受从前端传来的uid,id,title,remind,time,img，根据uid、id定位记录并更新
-    //修改成功返回err=1,失败err=0
+    //修改成功返回err=0,失败err=1
     //url:http://localhost:8080/api/habit/revise
     @RequestMapping("api/habit/revise")
     @ResponseBody
-    public Map<String, Object> habit_revise(int uid, int id, String title, int remind, String time, int img)
+    public Map<String, Object> habit_revise(int uid, int id, String title, int remind,int time, int img)
             throws ParseException {
 
-        int err = 0; //修改成功，err=1，修改失败，err=0
+        int err = 1; //修改成功，err=0，修改失败，err=1
         //数据库部分
         final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
         final String DB_URL = "jdbc:mysql://localhost:3306/user";
@@ -317,10 +317,10 @@ public class Habit_Controller {
             stmt = conn.prepareStatement(sql);
             ((PreparedStatement) stmt).setString(1, title);
             ((PreparedStatement) stmt).setInt(2, remind);
-            ((PreparedStatement) stmt).setString(3, time);
+            ((PreparedStatement) stmt).setInt(3, time);
             ((PreparedStatement) stmt).setInt(4, img);
             ((PreparedStatement) stmt).executeUpdate();
-            err = 1;
+            err = 0;
 
             // 完成后关闭
             stmt.close();
